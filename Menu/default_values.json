@@ -1,0 +1,9 @@
+{
+    "fall_damage": false,
+    "original_jumping": true,
+    "jump_style": 3,
+    "jump_range": 0.5,
+    "jump_height_multiplicator": 1.2,
+    "jump_height_max_multiplicator": 1.5,
+    "full_charge_feedback": true
+}

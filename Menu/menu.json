@@ -1,0 +1,79 @@
+{
+    "menu_id": "jump_hud_options",
+    "parent_menu_id": "blt_options",
+    "title": "jumpster_title",
+    "description": "jumpster_description",
+    "items": [
+        {
+            "type": "toggle",
+            "id": "fall_damage",
+            "title": "fall_damage_title",
+            "description": "fall_damage_description",
+            "callback": "fall_damage_callback",
+            "value": "fall_damage",
+            "default_value": false
+        }, {
+            "type": "toggle",
+            "id": "full_charge_feedback",
+            "title": "full_charge_feedback_title",
+            "description": "full_charge_feedback_description",
+            "callback": "full_charge_feedback_callback",
+            "value": "full_charge_feedback",
+            "default_value": false
+        }, {
+            "type": "multiple_choice",
+            "id": "jump_style",
+            "title": "jump_style_title",
+            "description": "jump_style_description",
+            "callback": "jump_style_callback",
+            "value": "jump_style",
+            "default_value": 2,
+            "items" : [
+                "no_jump",
+                "single_jump",
+                "double_jump",
+                "triple_jump",
+                "quad_jump",
+                "quintuple_jump",
+                "sextuple_jump",
+                "septuple_jump",
+                "octuple_jump",
+                "ninefold_jump",
+                "decuple_jump"
+            ]
+        }, {
+            "type": "slider",
+            "id": "jump_range",
+            "title": "jump_range_title",
+            "description": "jump_range_description",
+            "callback": "jump_range_callback",
+            "value": "jump_range",
+            "default_value": 1.5,
+            "max": 50,
+            "min": 0.1,
+            "step": 0.1
+        }, {
+            "type": "slider",
+            "id": "jump_height_multiplicator",
+            "title": "jump_height_title",
+            "description": "jump_height_description",
+            "callback": "jump_height_multiplicator_callback",
+            "value": "jump_height_multiplicator",
+            "default_value": 1.5,
+            "max": 50,
+            "min": 0.1,
+            "step": 0.1
+        }, {
+            "type": "slider",
+            "id": "jump_height_max_multiplicator",
+            "title": "jump_height_max_charge_title",
+            "description": "jump_height_max_charge_description",
+            "callback": "jump_height_max_multiplicator_callback",
+            "value": "jump_height_max_multiplicator",
+            "default_value": 1.5,
+            "max": 50,
+            "min": 0.1,
+            "step": 0.1
+        }
+    ]
+}

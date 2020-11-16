@@ -1,0 +1,29 @@
+{
+    "name": "Jump Mod",
+    "author": "Dr_Newbie, friendIyfire",
+    "version": "3",
+    "pre_hooks": [
+        {
+            "hook_id": "lib/managers/menumanager",
+            "script_path": "Menu/menu.lua"
+        }
+    ],
+    "hooks": [
+        {
+            "hook_id": "lib/units/beings/player/states/playerstandard",
+            "script_path": "Lua/PlayerStandard.lua"
+        },
+        {
+            "hook_id": "lib/units/beings/player/playerdamage",
+            "script_path": "Lua/PlayerDamage.lua"
+        }
+    ],
+	"keybinds": [
+		{"keybind_id": "toggle_jump_mod_button",	"name": "Original Jumping",
+											"description": "Switch between normal jumping and modded jumping",
+											"script_path": "lua/togglejumpmod.lua",
+											"run_in_menu": true,
+											"run_in_game": true,
+											"localized": false}
+	]
+}
