@@ -8,7 +8,6 @@ local _trigger_jump = false
 local _btn_jump_press_time = 0
 local _jump_is_charging = false
 local _number_of_jumps = 0
-local _stamina_drain_for_jumps = 0
 
 function calculate_pressed_percentage(start_time, end_time, max_time)
     local pressed_time = end_time - start_time
@@ -31,30 +30,39 @@ function PlayerStandard:_get_input(t, ...)
         local _pressed = self._controller:get_any_input_pressed()
         local _released = self._controller:get_any_input_released()
         local _btn_jump_pressed = _pressed and self._controller:get_input_pressed("jump")
-        local _btn_jump_release = _released and self._controller:get_input_released("jump")
+        local _btn_jump_released = _released and self._controller:get_input_released("jump")
+        local _btn_run_pressed = _pressed and self._controller:get_input_pressed("run")
+
         local _max_amount_of_jumps = (jump_mod._data.jump_style or 2) - 1
         local _full_charge_feedback = jump_mod._data.full_charge_feedback and true
+        local _dash = jump_mod._data.dash or true
+        local _jump_charged_sound_number = jump_mod._data.jump_charged_sound or 1
+        local _jump_charged_sound = jump_mod._sounds[_jump_charged_sound_number] or "Whoosh_SFX_01"
 
-        if _btn_jump_pressed and not _btn_jump_release then
+        if _btn_jump_pressed and not _btn_jump_released then
             _btn_jump_press_time = t
             _jump_is_charging = true
         end
 
-        if _btn_jump_release then
+        if _btn_jump_released then
             _jump_is_charging = false
         end
 
         if _full_charge_feedback and _jump_is_charging and calculate_pressed_percentage(_btn_jump_press_time, t, 3) == 1 then
             _jump_is_charging = false
-            self._unit:sound():play("shield_full_indicator")
+            jump_mod:playSound(_jump_charged_sound)
             managers.environment_controller:hit_feedback_down()
         end
 
-        if not self:in_air() and _btn_jump_pressed then
+        if _dash and self._state_data.meleeing and _btn_run_pressed then
+            self:_start_action_dash(t)
+        end
+
+        if not self:in_air() and (_btn_jump_pressed or _btn_jump_released) then
             _number_of_jumps = 0
         end
 
-        if _btn_jump_release and _number_of_jumps < _max_amount_of_jumps then
+        if _btn_jump_released and _number_of_jumps < _max_amount_of_jumps then
             _number_of_jumps = _number_of_jumps + 1
             _trigger_jump = true
         end
@@ -71,6 +79,22 @@ function PlayerStandard:_check_action_jump(t, input)
         self:_check_action_jump_new(t, input)
     else
         _f_PlayerStandard_check_action_jump(self, t, input)
+    end
+end
+
+function PlayerStandard:_start_action_dash(t)
+    local _dash_stamina_drain = jump_mod._data.dash_stamina_drain or 50
+    if _dash_stamina_drain <= self._unit:movement()._stamina then
+        local _dash_sound_number = jump_mod._data.dash_sound or 1
+        local _dash_sound = jump_mod._sounds[_dash_sound_number] or "Whoosh_SFX_01"
+
+        local action_start_data = {}
+        action_start_data.jump_vel_z = tweak_data.player.movement_state.standard.movement.jump_velocity.z * 0.05
+        action_start_data.jump_vel_xy = tweak_data.player.movement_state.standard.movement.jump_velocity.xy["run"] * 5
+
+        self._unit:movement():subtract_stamina(_dash_stamina_drain)
+        jump_mod:playSound(_dash_sound)
+        self:_start_action_jump(t, action_start_data)
     end
 end
 
@@ -111,9 +135,21 @@ function PlayerStandard:_check_action_jump_new(t, input)
                     _calculated_jumping_multiplicator = _jump_height_max_multiplicator
                 end
 
-                action_start_data.jump_vel_z = action_start_data.jump_vel_z * _calculated_jumping_multiplicator
-                self._unit:movement():subtract_stamina(_stamina_drain_for_jumps * _calculated_jumping_multiplicator)
-                new_action = self:_start_action_jump(t, action_start_data)
+                if self._unit:movement():is_above_stamina_threshold() then
+                    local _stamina_drain_for_jumps = jump_mod._data.stamina_drain or 15
+                    local _stamina_drain = _stamina_drain_for_jumps * _calculated_jumping_multiplicator
+
+                    if _stamina_drain > self._unit:movement()._stamina then
+                        _calculated_jumping_multiplicator = self._unit:movement()._stamina / _stamina_drain_for_jumps
+                    end
+
+                    action_start_data.jump_vel_z = action_start_data.jump_vel_z * _calculated_jumping_multiplicator
+                    action_start_data.jump_vel_xy = action_start_data.jump_vel_xy * _calculated_jumping_multiplicator
+
+                    self._unit:movement():subtract_stamina(_stamina_drain)
+
+                    new_action = self:_start_action_jump(t, action_start_data)
+                end
             end
         end
     end
@@ -127,10 +163,6 @@ function PlayerStandard:calculate_jump_range(t, _pressed_percentage, action_star
                             "walk"]
 
     action_start_data.jump_vel_xy = jump_vel_xy * (1 + _pressed_percentage * (_jump_range - 1))
-
-    if is_running then
-        self._unit:movement():subtract_stamina(tweak_data.player.movement_state.stamina.JUMP_STAMINA_DRAIN)
-    end
 
     return action_start_data
 end

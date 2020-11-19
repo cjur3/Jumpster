@@ -1,0 +1,30 @@
+<mod name="JumpMod">
+	<AddFiles directory="Assets">
+		<movie path="Whoosh_SFX_01"/>
+		<movie path="Whoosh_SFX_02"/>
+		<movie path="Whoosh_SFX_03"/>
+		<movie path="Whoosh_SFX_04"/>
+		<movie path="Whoosh_SFX_05"/>
+		<movie path="Whoosh_SFX_06"/>
+		<movie path="Whoosh_SFX_07"/>
+		<movie path="Whoosh_SFX_08"/>
+		<movie path="Whoosh_SFX_09"/>
+		<movie path="Whoosh_SFX_10"/>
+		<movie path="Whoosh_SFX_11"/>
+		<movie path="Whoosh_SFX_12"/>
+		<movie path="Whoosh_SFX_13"/>
+		<movie path="Whoosh_SFX_14"/>
+		<movie path="Whoosh_SFX_15"/>
+		<movie path="Whoosh_SFX_16"/>
+		<movie path="Whoosh_SFX_17"/>
+		<movie path="Whoosh_SFX_18"/>
+		<movie path="Whoosh_SFX_19"/>
+		<movie path="Whoosh_SFX_20"/>
+		<movie path="Whoosh_SFX_21"/>
+		<movie path="Whoosh_SFX_22"/>
+		<movie path="Whoosh_SFX_23"/>
+		<movie path="Whoosh_SFX_24"/>
+		<movie path="Whoosh_SFX_25"/>
+		<movie path="Whoosh_SFX_26"/>
+	</AddFiles>
+</mod>

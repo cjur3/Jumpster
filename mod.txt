@@ -5,7 +5,7 @@
     "pre_hooks": [
         {
             "hook_id": "lib/managers/menumanager",
-            "script_path": "Menu/menu.lua"
+            "script_path": "Core.lua"
         }
     ],
     "hooks": [
