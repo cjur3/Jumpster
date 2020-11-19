@@ -2,12 +2,19 @@ if not jump_mod then
     return
 end
 
+local _debug = false
 local _f_PlayerStandard_get_input = PlayerStandard._get_input
 
 local _trigger_jump = false
 local _btn_jump_press_time = 0
 local _jump_is_charging = false
 local _number_of_jumps = 0
+
+function logDebug(msg)
+    if _debug then
+        log(msg)
+    end
+end
 
 function calculate_pressed_percentage(start_time, end_time, max_time)
     local pressed_time = end_time - start_time
@@ -51,7 +58,6 @@ function PlayerStandard:_get_input(t, ...)
         if _full_charge_feedback and _jump_is_charging and calculate_pressed_percentage(_btn_jump_press_time, t, 3) == 1 then
             _jump_is_charging = false
             jump_mod:playSound(_jump_charged_sound)
-            managers.environment_controller:hit_feedback_down()
         end
 
         if _dash and self._state_data.meleeing and _btn_run_pressed then
@@ -84,7 +90,7 @@ end
 
 function PlayerStandard:_start_action_dash(t)
     local _dash_stamina_drain = jump_mod._data.dash_stamina_drain or 50
-    if _dash_stamina_drain <= self._unit:movement()._stamina then
+    if _dash_stamina_drain <= self._unit:movement()._stamina and self._move_dir then
         local _dash_sound_number = jump_mod._data.dash_sound or 1
         local _dash_sound = jump_mod._sounds[_dash_sound_number] or "Whoosh_SFX_01"
 
@@ -139,12 +145,18 @@ function PlayerStandard:_check_action_jump_new(t, input)
                     local _stamina_drain_for_jumps = jump_mod._data.stamina_drain or 15
                     local _stamina_drain = _stamina_drain_for_jumps * _calculated_jumping_multiplicator
 
+                    logDebug("Stamina drain: " .. _stamina_drain)
+
                     if _stamina_drain > self._unit:movement()._stamina then
                         _calculated_jumping_multiplicator = self._unit:movement()._stamina / _stamina_drain_for_jumps
+                        logDebug("Stamina drain too high adjusting jump multiplicator: " .. _calculated_jumping_multiplicator)
                     end
 
                     action_start_data.jump_vel_z = action_start_data.jump_vel_z * _calculated_jumping_multiplicator
-                    action_start_data.jump_vel_xy = action_start_data.jump_vel_xy * _calculated_jumping_multiplicator
+                    
+                    if action_start_data.jump_vel_xy then
+                        action_start_data.jump_vel_xy = action_start_data.jump_vel_xy * _calculated_jumping_multiplicator
+                    end
 
                     self._unit:movement():subtract_stamina(_stamina_drain)
 
